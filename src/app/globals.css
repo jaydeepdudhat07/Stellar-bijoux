@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Playball&display=swap');
+@import "tailwindcss";
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+  --gold: #D4AF37;
+  --gold-light: #F4E5C2;
+  --gold-dark: #B8941F;
+  --wheat: #f5deb3;
+}
+
+@theme inline {
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-wheat: var(--wheat);
+  --font-cormorant: var(--font-cormorant);
+  --font-lato: var(--font-lato);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  font-family: var(--font-lato), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom styles */
+.heading-font {
+  font-family: var(--font-cormorant), serif;
+}
+
+.body-font {
+  font-family: var(--font-lato), sans-serif;
+}
+
+.script-font {
+  font-family: 'Playball', cursive;
+}
+
+/* Elegant Button Styles */
+.elegant-button {
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0) 50%, #ffffff 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+  transition: all 500ms ease-out;
+  color: black;
+  text-align: center;
+  line-height: 35px;
+  text-decoration: none;
+  padding: 10px 40px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.elegant-button:hover {
+  border: 1px solid white;
+  color: white;
+  background-color: transparent !important;
+  background-position: left bottom;
+}
+
+/* Parallax Container */
+.parallax-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Smooth Transitions */
+* {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+/* Product Card Hover Effects */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Swiper Customization */
+.swiper-pagination-bullet {
+  background: var(--gold) !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--gold-dark) !important;
+}
