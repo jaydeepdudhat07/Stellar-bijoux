@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useProducts } from '@/hooks/useProducts';
 import { useSettings } from '@/hooks/useSettings';
 import { getWhatsAppLink } from '@/utils/whatsapp';
+import SimilarProducts from './SimilarProducts';
+import Newsletter from './Newsletter';
 
 interface ProductDetailContentProps {
   slug: string;
@@ -169,14 +171,34 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
               <div className="mb-8">
                 <h3 className="font-bold text-gray-900 mb-3 uppercase tracking-wider text-sm">Available Colors</h3>
                 <div className="flex flex-wrap gap-3">
-                  {product.colors.map((color: string) => (
-                    <span
-                      key={color}
-                      className="bg-white border-2 border-gray-200 text-gray-800 px-5 py-2 rounded-sm font-medium hover:border-gold transition-colors"
-                    >
-                      {color} Gold
-                    </span>
-                  ))}
+                  {product.colors.map((color: string) => {
+                    const colorLower = color.toLowerCase();
+                    let bgColor = 'bg-gray-100';
+                    let textColor = 'text-gray-800';
+                    
+                    if (colorLower.includes('rose') || colorLower.includes('pink')) {
+                      bgColor = 'bg-rose-100';
+                      textColor = 'text-rose-900';
+                    } else if (colorLower.includes('yellow') || colorLower.includes('gold')) {
+                      bgColor = 'bg-yellow-100';
+                      textColor = 'text-yellow-900';
+                    } else if (colorLower.includes('white')) {
+                      bgColor = 'bg-gray-50';
+                      textColor = 'text-gray-800';
+                    } else if (colorLower.includes('black')) {
+                      bgColor = 'bg-gray-800';
+                      textColor = 'text-white';
+                    }
+                    
+                    return (
+                      <span
+                        key={color}
+                        className={`${bgColor} ${textColor} px-5 py-2 rounded-md text-sm font-medium border border-transparent hover:border-gray-300 transition-all cursor-default`}
+                      >
+                        {color}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -210,7 +232,7 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
               href={getWhatsAppLink(product.title, whatsappNumber)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white font-bold px-10 py-5 rounded-sm transition-all shadow-lg hover:shadow-xl uppercase tracking-widest text-sm"
+              className="inline-flex items-center justify-center w-full bg-gold hover:bg-gold-dark text-white font-bold px-10 py-5 rounded-sm transition-all shadow-lg hover:shadow-xl uppercase tracking-widest text-sm"
             >
               <svg
                 className="w-6 h-6 mr-3"
@@ -228,6 +250,31 @@ export default function ProductDetailContent({ slug }: ProductDetailContentProps
           </div>
         </div>
       </div>
+
+      {/* Similar Products Section */}
+      {(() => {
+        // Extract category and subcategory IDs
+        const getCategoryId = (cat: any) => {
+          if (!cat) return null;
+          if (typeof cat === 'string') return cat;
+          return cat._id || null;
+        };
+
+        const categoryId = getCategoryId(product.category);
+        const subcategoryId = getCategoryId(product.subcategory);
+
+        return (
+          <SimilarProducts
+            currentProductId={product._id}
+            categoryId={categoryId}
+            subcategoryId={subcategoryId}
+            limit={8}
+          />
+        );
+      })()}
+
+      {/* Newsletter Subscription */}
+      <Newsletter />
     </div>
   );
 }

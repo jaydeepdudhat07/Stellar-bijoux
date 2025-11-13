@@ -1,14 +1,16 @@
 export default function AboutPageContent() {
   return (
     <>
-      <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 py-16 pt-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold heading-font text-gray-900 mb-4">
-            About Us
-          </h1>
-          <p className="text-xl text-gray-700">
-            Crafting timeless elegance since the beginning
-          </p>
+      <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 pt-32 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-5xl font-bold heading-font text-gray-900 mb-4">
+              About Us
+            </h1>
+            <p className="text-xl text-gray-700">
+              Crafting timeless elegance since the beginning
+            </p>
+          </div>
         </div>
       </div>
 

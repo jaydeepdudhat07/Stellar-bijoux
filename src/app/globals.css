@@ -100,3 +100,98 @@ html {
 .swiper-pagination-bullet-active {
   background: var(--gold-dark) !important;
 }
+
+/* Category Swiper Styles */
+.category-swiper {
+  padding-bottom: 50px !important;
+}
+
+.category-swiper .swiper-pagination {
+  bottom: 0 !important;
+  position: relative !important;
+  margin-top: 24px !important;
+}
+
+.category-swiper .swiper-pagination-bullet {
+  width: 10px !important;
+  height: 10px !important;
+  margin: 0 4px !important;
+}
+
+/* Similar Products Swiper Styles */
+.similar-products-swiper {
+  padding-bottom: 50px !important;
+}
+
+.similar-products-swiper .swiper-pagination {
+  bottom: 0 !important;
+  position: relative !important;
+  margin-top: 24px !important;
+}
+
+.similar-products-swiper .swiper-pagination-bullet {
+  width: 10px !important;
+  height: 10px !important;
+  margin: 0 4px !important;
+}
+
+/* Showroom Swiper Styles */
+.showroom-swiper {
+  padding-bottom: 50px !important;
+}
+
+.showroom-swiper .swiper-pagination {
+  bottom: 0 !important;
+  position: relative !important;
+  margin-top: 24px !important;
+}
+
+.showroom-swiper .swiper-pagination-bullet {
+  width: 10px !important;
+  height: 10px !important;
+  margin: 0 4px !important;
+}
+
+/* Hide scrollbar for filter sliders */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Custom scrollbar for filters */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #b8941f;
+}
+
+/* Leaflet Map Custom Styles */
+.leaflet-container {
+  font-family: var(--font-lato), sans-serif;
+}
+
+.custom-marker,
+.custom-marker-selected {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-marker-selected {
+  z-index: 1000 !important;
+}

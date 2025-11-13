@@ -64,7 +64,7 @@ export default function HomePage() {
             Explore our handpicked selection of exquisite jewelry
           </p>
           <Link 
-            href="/products" 
+            href="/products?featured=true" 
             className="inline-block px-8 py-3 bg-gold text-white rounded-sm hover:bg-gold-dark transition-colors uppercase tracking-wider text-sm font-medium"
           >
             View All Products

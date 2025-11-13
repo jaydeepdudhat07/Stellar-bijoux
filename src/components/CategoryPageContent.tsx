@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import { useCategories } from '@/hooks/useCategories';
 import { useProducts } from '@/hooks/useProducts';
 import { useStones } from '@/hooks/useStones';
 import ProductCard from '@/components/ProductCard';
 import Filters from '@/components/Filters';
 import Pagination from '@/components/Pagination';
+
+const DEFAULT_CATEGORY_IMAGE = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2070&q=80';
 
 const COLORS = ['Yellow', 'Rose', 'White', 'Black'];
 const CARATS = ['10k', '14k', '18k', '22k'];
@@ -97,15 +100,29 @@ export default function CategoryPageContent({ slug }: CategoryPageContentProps) 
   return (
     <>
       {/* Hero Banner */}
-      <div className="relative h-64 bg-black pt-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-gray-900 to-black opacity-90" />
-        <div className="relative h-full flex items-center justify-center">
+      <div className="relative h-48 md:h-64 lg:h-80 pt-20 overflow-hidden">
+        {/* Background Image with Blur */}
+        <div className="absolute inset-0">
+          <Image
+            src={category.image || DEFAULT_CATEGORY_IMAGE}
+            alt={category.name}
+            fill
+            className="object-cover object-center scale-110 blur-sm"
+            priority
+            quality={90}
+            sizes="100vw"
+          />
+        </div>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+        {/* Content */}
+        <div className="relative h-full flex items-center justify-center z-10">
           <div className="text-center text-white px-4">
-            <h1 className="text-4xl md:text-5xl font-bold heading-font mb-3">
+            <h1 className="text-4xl md:text-5xl font-bold heading-font mb-3 drop-shadow-lg">
               {category.name}
             </h1>
             {category.description && (
-              <p className="text-gray-300 tracking-wide text-sm md:text-base max-w-2xl mx-auto">
+              <p className="text-gray-200 tracking-wide text-sm md:text-base max-w-2xl mx-auto drop-shadow-md">
                 {category.description}
               </p>
             )}
@@ -115,9 +132,89 @@ export default function CategoryPageContent({ slug }: CategoryPageContentProps) 
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Mobile/Tablet Filters - Horizontal Slider */}
+        <div className="lg:hidden mb-8">
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold heading-font">Filters</h3>
+              <button
+                onClick={handleReset}
+                className="text-sm text-yellow-600 hover:text-yellow-700 font-medium"
+              >
+                Reset
+              </button>
+            </div>
+            
+            {/* Horizontal Filter Sliders */}
+            <div className="space-y-4">
+              {/* Color Filter */}
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3 text-sm">Color</h4>
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  {COLORS.map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedColor(selectedColor === color ? '' : color)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                        selectedColor === color
+                          ? 'bg-gold text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Carat Filter */}
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3 text-sm">Carat</h4>
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  {CARATS.map((carat) => (
+                    <button
+                      key={carat}
+                      onClick={() => setSelectedCarat(selectedCarat === carat ? '' : carat)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                        selectedCarat === carat
+                          ? 'bg-gold text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {carat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stone Filter */}
+              {stones.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-3 text-sm">Stones</h4>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    {stones.map((stone: any) => (
+                      <button
+                        key={stone._id}
+                        onClick={() => setSelectedStone(selectedStone === stone._id ? '' : stone._id)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                          selectedStone === stone._id
+                            ? 'bg-gold text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {stone.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
+          {/* Filters Sidebar - Desktop Only */}
+          <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-24">
               <Filters
                 colors={COLORS}
@@ -136,10 +233,73 @@ export default function CategoryPageContent({ slug }: CategoryPageContentProps) 
 
           {/* Products Grid */}
           <div className="lg:col-span-3">
-            <div className="mb-8 flex justify-between items-center border-b border-gray-200 pb-4">
+            <div className="mb-6 flex justify-between items-center border-b border-gray-200 pb-4">
               <p className="text-gray-600 tracking-wide">
                 <span className="font-semibold text-gray-900">{filteredProducts.length}</span> {filteredProducts.length === 1 ? 'product' : 'products'} found
               </p>
+            </div>
+
+            {/* Fast Filter Section - Desktop Only */}
+            <div className="mb-8 hidden lg:block">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm font-semibold text-gray-700 uppercase tracking-wider">Fast Filter:</span>
+                
+                {/* Color Quick Filters */}
+                <div className="flex flex-wrap items-center gap-2">
+                  {COLORS.map((color) => {
+                    const colorLower = color.toLowerCase();
+                    let bgColor = 'bg-gray-100';
+                    let textColor = 'text-gray-700';
+                    let borderColor = 'border-gray-300';
+                    
+                    if (colorLower.includes('rose') || colorLower.includes('pink')) {
+                      bgColor = 'bg-rose-100';
+                      textColor = 'text-rose-900';
+                      borderColor = 'border-rose-300';
+                    } else if (colorLower.includes('yellow') || colorLower.includes('gold')) {
+                      bgColor = 'bg-yellow-100';
+                      textColor = 'text-yellow-900';
+                      borderColor = 'border-yellow-300';
+                    } else if (colorLower.includes('white')) {
+                      bgColor = 'bg-gray-50';
+                      textColor = 'text-gray-800';
+                      borderColor = 'border-gray-300';
+                    } else if (colorLower.includes('black')) {
+                      bgColor = 'bg-gray-800';
+                      textColor = 'text-white';
+                      borderColor = 'border-gray-700';
+                    }
+                    
+                    return (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(selectedColor === color ? '' : color)}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all border-2 flex items-center gap-2 ${
+                          selectedColor === color
+                            ? `${bgColor} ${textColor} ${borderColor} shadow-md`
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:shadow-sm'
+                        }`}
+                      >
+                        <span className={`w-4 h-4 rounded-full ${bgColor} border ${borderColor}`}></span>
+                        {color === 'Yellow' ? 'Gold' : color === 'Rose' ? 'Rose Gold' : color} {color === 'White' ? 'Color' : ''}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Remove All Button */}
+                {(selectedColor || selectedCarat || selectedStone) && (
+                  <button
+                    onClick={handleReset}
+                    className="ml-auto px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 border-2 border-gray-300 hover:border-gray-400 bg-white transition-all flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Remove All
+                  </button>
+                )}
+              </div>
             </div>
 
             {filteredProducts.length > 0 ? (

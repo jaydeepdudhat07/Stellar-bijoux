@@ -15,7 +15,23 @@ export const useProducts = (filters?: ProductFilters) => {
   return useQuery({
     queryKey: ['products', filters],
     queryFn: async () => {
-      const response = await api.get('/products', { params: filters });
+      // Only include params if filters are provided and not empty
+      if (!filters || Object.keys(filters).length === 0) {
+        const response = await api.get('/products');
+        return response.data;
+      }
+      
+      // Convert filters to query params, converting boolean to string for featured
+      const params: any = {};
+      if (filters.category) params.category = filters.category;
+      if (filters.subcategory) params.subcategory = filters.subcategory;
+      if (filters.color) params.color = filters.color;
+      if (filters.carat) params.carat = filters.carat;
+      if (filters.stone) params.stone = filters.stone;
+      if (filters.search) params.search = filters.search;
+      if (filters.featured !== undefined) params.featured = filters.featured ? 'true' : 'false';
+      
+      const response = await api.get('/products', { params });
       return response.data;
     },
   });

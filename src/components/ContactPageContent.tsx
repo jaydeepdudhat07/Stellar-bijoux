@@ -1,118 +1,172 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { getWhatsAppLink } from '@/utils/whatsapp';
 import { useSettings } from '@/hooks/useSettings';
+
+// Dynamically import map component to avoid SSR issues
+const ShowroomMap = dynamic(() => import('@/components/ShowroomMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[500px] bg-gray-100 rounded-lg flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading map...</p>
+      </div>
+    </div>
+  ),
+});
+
+interface Showroom {
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+  phone?: string;
+  email?: string;
+  latitude: number;
+  longitude: number;
+}
 
 export default function ContactPageContent() {
   const { data: settings } = useSettings();
   const whatsappNumber = settings?.whatsapp;
+  const [selectedShowroomIndex, setSelectedShowroomIndex] = useState<number | null>(null);
+
+  const showrooms = useMemo(() => {
+    if (!settings?.showrooms) return [];
+    try {
+      const parsed = JSON.parse(settings.showrooms);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }, [settings?.showrooms]);
+
+  const handleShowroomClick = (index: number) => {
+    setSelectedShowroomIndex(index);
+    // Scroll to map section
+    setTimeout(() => {
+      const mapSection = document.getElementById('showroom-map');
+      if (mapSection) {
+        mapSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 100);
+  };
   return (
     <>
-      <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 py-16 pt-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold heading-font text-gray-900 mb-4">
-            Contact Us
-          </h1>
-          <p className="text-xl text-gray-700">
-            We'd love to hear from you
-          </p>
+      <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 pt-32 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-5xl font-bold heading-font text-gray-900 mb-4">
+              Contact Us
+            </h1>
+            <p className="text-xl text-gray-700">
+              We'd love to hear from you
+            </p>
+          </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Contact Info */}
+        {/* Our Showrooms Section */}
+        {showrooms.length > 0 && (
           <div>
-            <h2 className="text-3xl font-bold heading-font text-gray-900 mb-6">
-              Get in Touch
+            <h2 className="text-3xl font-bold heading-font text-gray-900 mb-8 text-center">
+              Our Showrooms
             </h2>
-            <p className="text-gray-700 mb-8">
-              Have questions about our jewelry? Want to inquire about a specific piece
-              or discuss custom designs? We're here to help!
-            </p>
 
-            <div className="space-y-6">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="w-6 h-6 text-yellow-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Location</h3>
-                  <p className="text-gray-700">Visit us at our showroom</p>
-                </div>
-              </div>
+            {/* Showroom Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {showrooms.map((showroom: Showroom, index: number) => (
+                <div
+                  key={index}
+                  onClick={() => handleShowroomClick(index)}
+                  className={`bg-white p-6 rounded-lg shadow-md border-2 cursor-pointer transition-all duration-300 ${selectedShowroomIndex === index
+                      ? 'border-gold shadow-lg scale-105'
+                      : 'border-gray-200 hover:border-gold hover:shadow-lg'
+                    }`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-xl font-bold heading-font text-gray-900">
+                      {showroom.name}
+                    </h3>
+                    {selectedShowroomIndex === index && (
+                      <svg
+                        className="w-5 h-5 text-gold flex-shrink-0"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                  </div>
 
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="w-6 h-6 text-yellow-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Email</h3>
-                  <p className="text-gray-700">info@jewelryshowcase.com</p>
-                </div>
-              </div>
+                  <div className="space-y-2 text-sm text-gray-700">
+                    <p className="font-medium">{showroom.address}</p>
+                    <p>{showroom.city}, {showroom.country}</p>
+                    {showroom.phone && (
+                      <p className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        {showroom.phone}
+                      </p>
+                    )}
+                    {showroom.email && (
+                      <p className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <a
+                          href={`mailto:${showroom.email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="hover:text-gold transition-colors"
+                        >
+                          {showroom.email}
+                        </a>
+                      </p>
+                    )}
+                  </div>
 
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="w-6 h-6 text-yellow-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <p className="text-xs text-gold font-medium flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      Click to view on map
+                    </p>
+                  </div>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Business Hours</h3>
-                  <p className="text-gray-700">Monday - Saturday: 10am - 7pm</p>
-                  <p className="text-gray-700">Sunday: Closed</p>
-                </div>
-              </div>
+              ))}
             </div>
-          </div>
 
-          {/* WhatsApp Contact */}
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-8">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-4">
+            {/* Map Section */}
+            <div id="showroom-map" className="mt-8">
+              <div className="bg-white rounded-lg shadow-md overflow-hidden p-4">
+                <ShowroomMap
+                  showrooms={showrooms}
+                  selectedIndex={selectedShowroomIndex}
+                />
+              </div>
+              {selectedShowroomIndex !== null && (
+                <p className="text-center text-sm text-gray-600 mt-4">
+                  Showing location: <span className="font-semibold text-gold">{showrooms[selectedShowroomIndex]?.name}</span>
+                </p>
+              )}
+            </div>
+
+            {/* WhatsApp Contact - moved below map */}
+            <div className="mt-16 bg-gradient-to-br from-gold-light to-wheat rounded-2xl shadow-lg p-10 text-center max-w-2xl mx-auto">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gold rounded-full mb-6">
                 <svg
-                  className="w-10 h-10 text-white"
+                  className="w-12 h-12 text-white"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -120,19 +174,18 @@ export default function ContactPageContent() {
                 </svg>
               </div>
 
-              <h3 className="text-2xl font-bold heading-font text-gray-900 mb-2">
+              <h3 className="text-2xl font-bold heading-font text-gray-900 mb-3">
                 Chat with us on WhatsApp
               </h3>
-              <p className="text-gray-700 mb-6">
-                Get instant responses to your jewelry inquiries. Our team is ready to help
-                you find the perfect piece.
+              <p className="text-gray-700 mb-6 max-w-md mx-auto">
+                Get instant responses to your jewelry inquiries. Our team is ready to help you find the perfect piece.
               </p>
 
               <a
                 href={getWhatsAppLink(undefined, whatsappNumber)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 rounded-lg transition-all hover:scale-105"
+                className="inline-block bg-gold hover:bg-gold-dark text-white font-semibold px-8 py-4 rounded-lg transition-all hover:scale-105"
               >
                 Start Chat
               </a>
@@ -142,7 +195,7 @@ export default function ContactPageContent() {
               </p>
             </div>
           </div>
-        </div>
+        )}
 
         {/* FAQ Section */}
         <div className="mt-16">

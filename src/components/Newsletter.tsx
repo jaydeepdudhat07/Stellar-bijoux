@@ -15,7 +15,7 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="py-20 px-4 md:px-10 bg-gradient-to-r from-gold-light to-wheat">
+    <section className="pt-20 pb-16 px-4 md:px-10 bg-gradient-to-r from-gold-light to-wheat">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-bold heading-font mb-4 text-gray-900">
           Stay Updated with Our Newsletter

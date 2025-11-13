@@ -1,66 +1,102 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { FaEye } from 'react-icons/fa';
+import ProductPreviewModal from './ProductPreviewModal';
 
 interface Product {
   _id: string;
   title: string;
   slug: string;
   price: number;
-  photos: { url: string }[];
+  photos: { url: string; publicId?: string }[];
   colors: string[];
   carat: string;
+  description?: string;
+  category?: { name: string; slug: string };
+  subcategory?: { name: string; slug: string };
+  stones?: Array<{ name: string } | string>;
+  qa?: Array<{ question: string; answer: string }>;
 }
 
 export default function ProductCard({ product }: { product: Product }) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsPreviewOpen(true);
+  };
 
   return (
-    <Link href={`/product/${product.slug}`} className="h-full block">
+    <>
       <motion.div
         whileHover={{ y: -8 }}
-        className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-shadow hover:shadow-xl h-full flex flex-col"
+        className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-shadow hover:shadow-xl h-full flex flex-col relative group"
       >
-        <div className="relative h-64 bg-gray-100 flex-shrink-0">
-          {product.photos && product.photos.length > 0 ? (
-            <Image
-              src={product.photos[0].url}
-              alt={product.title}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-400">
-              No Image
-            </div>
-          )}
-        </div>
-        <div className="p-4 flex flex-col flex-grow">
-          <h3 className="text-xl font-semibold heading-font text-gray-900 mb-2 line-clamp-1">
-            {product.title}
-          </h3>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-2xl font-bold text-yellow-600">
-              ₹{product.price.toLocaleString('en-IN')}
-            </span>
-            <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-              {product.carat}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-1 mt-auto">
-            {product.colors.map((color) => (
-              <span
-                key={color}
-                className="text-xs bg-yellow-50 text-yellow-800 px-2 py-1 rounded"
+        <Link href={`/product/${product.slug}`} className="h-full block">
+          <div className="relative h-64 bg-gray-100 flex-shrink-0">
+            {product.photos && product.photos.length > 0 ? (
+              <Image
+                src={product.photos[0].url}
+                alt={product.title}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-400">
+                No Image
+              </div>
+            )}
+            
+            {/* Quick View Icon - Show on Hover */}
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                onClick={handleQuickView}
+                className="bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-colors"
+                aria-label="Quick view"
+                title="Quick view"
               >
-                {color}
-              </span>
-            ))}
+                <FaEye className="w-4 h-4 text-gray-800" />
+              </button>
+            </div>
           </div>
-        </div>
+          <div className="p-4 flex flex-col flex-grow">
+            <h3 className="text-xl font-semibold heading-font text-gray-900 mb-2 line-clamp-1">
+              {product.title}
+            </h3>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-2xl font-bold text-yellow-600">
+                ₹{product.price.toLocaleString('en-IN')}
+              </span>
+              <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                {product.carat}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1 mt-auto">
+              {product.colors.map((color) => (
+                <span
+                  key={color}
+                  className="text-xs bg-yellow-50 text-yellow-800 px-2 py-1 rounded"
+                >
+                  {color}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Link>
       </motion.div>
-    </Link>
+
+      {/* Product Preview Modal */}
+      <ProductPreviewModal
+        product={product}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+      />
+    </>
   );
 }
 
